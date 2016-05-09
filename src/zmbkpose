@@ -35,20 +35,20 @@
 
 show_help ()
 {
-echo "Usage: 
-     zmbkpose -f 	
+echo "Usage:
+     zmbkpose -f
 			Execute full backup, all accounts.
      zmbkpose -f mail1,mail2,...,mailn
 			Execute backup full for specific accounts.
-     zmbkpose -i 	
+     zmbkpose -i
 			Execute a full incremental backup all accounts.
 			Needs a least one full backup of all account complete.
-     zmbkpose -i mail1,mail2,...,mailn	
+     zmbkpose -i mail1,mail2,...,mailn
 			Execute a incremental backup in specified accounts provided in the command line.
 			If the account doesn't have a previosly full backup, will be done in the same session.
      zmbkpose -l
 			List backup sessions already done.
-     zmbkpose -r mail1,mail2,...,mailn nome_da_sessao	
+     zmbkpose -r mail1,mail2,...,mailn nome_da_sessao
 			Restore content from accounts specified by command line.
 			If yout dont provide the name session will be run a full restore: All Backup found, from the oldest to the newer.
      zmbkpose -restoreAccount mail1,mail2,...,mailn
@@ -66,8 +66,8 @@ echo "Usage:
      zmbkpose -d n months
 			Onde \"n\" é um número.
 			Exclude all backup before <number> of months.
-     zmbkpose --restoreAllAccounts 
-			Restore all accounts 
+     zmbkpose --restoreAllAccounts
+			Restore all accounts
 
      zmbkpose --restoreOnAccount <orig_account> <dst_account>
                         Restore backup on another specified account
@@ -84,11 +84,10 @@ echo "Usage:
      zmbkpose --restoreAlias
 			Restore all alias from last backup
 
-	
 
 "
 # TODO Implements a hidden "Disaster Recovery" option + confirmations
-exit 0 
+exit 0
 }
 
 
@@ -134,36 +133,38 @@ echo "Usos:
 exit 0
 }
 
+date=$(date +%Y%m%d-%H.%M)
+
 zmmailbox_full_backup_parallel()
 {
-	echo "Full backup from user $MAIL in background."
+	echo "$date : Full backup from user $MAIL in background." | tee -a $WORKDIR/backup.log
 	/opt/zimbra/bin/zmmailbox -z -m $MAIL getRestURL "//?fmt=tgz" > $TEMPDIR/$MAIL.tgz &
 }
 
 zmmailbox_full_backup()
 {
-	echo -n "Full backup from user $MAIL..."
+	echo -n "$date : Full backup from user $MAIL..." | tee -a $WORKDIR/backup.log
 	/opt/zimbra/bin/zmmailbox -z -m $MAIL getRestURL "//?fmt=tgz" > $TEMPDIR/$MAIL.tgz
 	echo "Done"
 }
 
 zmmailbox_inc_backup()
 {
-	echo -n "Incremental backup from user $MAIL..."
+	echo -n "$date : Incremental backup from user $MAIL..." | tee -a $WORKDIR/backup.log
 	/opt/zimbra/bin/zmmailbox -z -m $MAIL getRestURL "//?fmt=tgz&query=after:${INCFROM}" > $TEMPDIR/$MAIL.tgz
 	echo "Done"
 }
 
 zmmailbox_restore()
 {
-	echo "Restore from backup to user $MAIL..."
+	echo "$date : Restore from backup to user $MAIL..." | tee -a $WORKDIR/backup.log
 	/opt/zimbra/bin/zmmailbox -z -m $MAIL postRestURL "//?fmt=tgz&resolve=reset" @$WORKDIR/$SESSIONACCOUNT/$MAIL.tgz
 	echo "Done"
 }
 
 zmmailbox_restore_parallel()
 {
-	echo "Restore from backup to user $MAIL in background."
+	echo "$date : Restore from backup to user $MAIL in background." | tee -a $WORKDIR/backup.log
 	/opt/zimbra/bin/zmmailbox -z -m $MAIL postRestURL "//?fmt=tgz&resolve=reset" @$WORKDIR/$SESSIONACCOUNT/$MAIL.tgz &
 }
 
