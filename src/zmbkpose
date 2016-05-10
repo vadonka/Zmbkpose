@@ -133,16 +133,16 @@ echo "Usos:
 exit 0
 }
 
-date=$(date +%Y%m%d-%H.%M)
-
 zmmailbox_full_backup_parallel()
 {
+	date=$(date +%Y%m%d-%H.%M)
 	echo "$date : Full backup from user $MAIL in background." | tee -a $WORKDIR/backup.log
 	/opt/zimbra/bin/zmmailbox -z -m $MAIL getRestURL "//?fmt=tgz" > $TEMPDIR/$MAIL.tgz &
 }
 
 zmmailbox_full_backup()
 {
+	date=$(date +%Y%m%d-%H.%M)
 	echo -n "$date : Full backup from user $MAIL..." | tee -a $WORKDIR/backup.log
 	/opt/zimbra/bin/zmmailbox -z -m $MAIL getRestURL "//?fmt=tgz" > $TEMPDIR/$MAIL.tgz
 	echo "Done"
@@ -150,6 +150,7 @@ zmmailbox_full_backup()
 
 zmmailbox_inc_backup()
 {
+	date=$(date +%Y%m%d-%H.%M)
 	echo -n "$date : Incremental backup from user $MAIL..." | tee -a $WORKDIR/backup.log
 	/opt/zimbra/bin/zmmailbox -z -m $MAIL getRestURL "//?fmt=tgz&query=after:${INCFROM}" > $TEMPDIR/$MAIL.tgz
 	echo "Done"
@@ -157,6 +158,7 @@ zmmailbox_inc_backup()
 
 zmmailbox_restore()
 {
+	date=$(date +%Y%m%d-%H.%M)
 	echo "$date : Restore from backup to user $MAIL..." | tee -a $WORKDIR/backup.log
 	/opt/zimbra/bin/zmmailbox -z -m $MAIL postRestURL "//?fmt=tgz&resolve=reset" @$WORKDIR/$SESSIONACCOUNT/$MAIL.tgz
 	echo "Done"
@@ -164,6 +166,7 @@ zmmailbox_restore()
 
 zmmailbox_restore_parallel()
 {
+	date=$(date +%Y%m%d-%H.%M)
 	echo "$date : Restore from backup to user $MAIL in background." | tee -a $WORKDIR/backup.log
 	/opt/zimbra/bin/zmmailbox -z -m $MAIL postRestURL "//?fmt=tgz&resolve=reset" @$WORKDIR/$SESSIONACCOUNT/$MAIL.tgz &
 }
